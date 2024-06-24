@@ -26,7 +26,9 @@ allprojects {
     kotlin {
         jvmToolchain(17)
     }
+}
 
+subprojects {
     publishing {
         publications {
             register<MavenPublication>("gpr") {
