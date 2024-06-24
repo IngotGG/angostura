@@ -34,6 +34,7 @@ subprojects {
             register<MavenPublication>("gpr") {
                 from(components["java"])
 
+                groupId = "gg.ingot"
                 artifactId = "angostura-${project.name}"
             }
         }
