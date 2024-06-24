@@ -39,3 +39,8 @@ subprojects {
         }
     }
 }
+
+dependencies {
+    implementation(project(":core"))
+    implementation(project(":extensions:jedis-cache"))
+}
