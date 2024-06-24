@@ -26,16 +26,15 @@ allprojects {
     kotlin {
         jvmToolchain(17)
     }
-}
 
-subprojects {
     publishing {
         publications {
             register<MavenPublication>("gpr") {
                 from(components["java"])
 
-                groupId = "gg.ingot"
+                groupId = "${rootProject.group}"
                 artifactId = "angostura-${project.name}"
+                version = "${project.version}"
             }
         }
     }

@@ -6,7 +6,6 @@ subprojects {
     }
 
     dependencies {
-        implementation(project(":core"))
+        compileOnly(project(":core"))
     }
-
 }
