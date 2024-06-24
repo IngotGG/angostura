@@ -26,21 +26,15 @@ allprojects {
     kotlin {
         jvmToolchain(17)
     }
-}
 
-subprojects {
     publishing {
         publications {
             register<MavenPublication>("gpr") {
                 from(components["java"])
 
+                groupId = "gg.ingot"
                 artifactId = "angostura-${project.name}"
             }
         }
     }
-}
-
-dependencies {
-    implementation(project(":core"))
-    implementation(project(":extensions:jedis-cache"))
 }
