@@ -1,6 +1,6 @@
 <a href="https://ingot.gg/">
     <p align="center">
-        <img width="225" height="225" src="https://raw.githubusercontent.com/IngotGG/branding/master/branding.svg" alt="iron"/>
+        <img width="225" height="225" src="https://raw.githubusercontent.com/IngotGG/branding/master/branding.svg" alt="angostura"/>
     </p>
 </a>
 
@@ -14,7 +14,7 @@
 
 Angostura is a quick and easy caching layer used by [ingot.gg](https://ingot.gg) backend services to handle heavy database load and used for general caching.
 
-Feel free to read the [Contribution Guide](https://github.com/IngotGG/angostura/blob/master/CONTRIBUTING.md) to learn how to contribute to Iron or report issues.
+Feel free to read the [Contribution Guide](https://github.com/IngotGG/angostura/blob/master/CONTRIBUTING.md) to learn how to contribute to Angostura or report issues.
 
 ## Importing
 
