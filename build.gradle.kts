@@ -3,19 +3,17 @@ plugins {
     `maven-publish`
 }
 
-group = "gg.ingot"
-version = "1.0.0"
-
 allprojects {
-    apply(plugin = "kotlin")
-    apply(plugin = "maven-publish")
+    version = "1.0.0"
+    group = "gg.ingot"
+}
 
-    group = rootProject.group
-    version = rootProject.version
+subprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "maven-publish")
 
     repositories {
         mavenCentral()
-        mavenLocal()
     }
 
     java {
@@ -29,12 +27,12 @@ allprojects {
 
     publishing {
         publications {
-            register<MavenPublication>("gpr") {
-                from(components["java"])
-
-                groupId = "${rootProject.group}"
+            register<MavenPublication>("maven") {
+                groupId = "${project.group}"
                 artifactId = "angostura-${project.name}"
                 version = "${project.version}"
+
+                from(components["java"])
             }
         }
     }
