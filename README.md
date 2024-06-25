@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    implementation("gg.ingot:angostura-core:TAG")
+    implementation("gg.ingot.angostura:angostura-core:TAG")
 }
 ```
 ### Maven
@@ -39,7 +39,7 @@ dependencies {
 </repository>
 
 <dependency>
-    <groupId>gg.ingot</groupId>
+    <groupId>gg.ingot.angostura</groupId>
     <artifactId>angostura-core</artifactId>
     <version>TAG</version>
 </dependency>
