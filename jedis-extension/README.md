@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation("gg.ingot:angostura-jedis-cache:TAG")
+    implementation("gg.ingot:angostura-jedis-extension:TAG")
 }
 ```
 ### Maven
@@ -22,7 +22,7 @@ dependencies {
 
 <dependency>
     <groupId>gg.ingot</groupId>
-    <artifactId>angostura-jedis-cache</artifactId>
+    <artifactId>angostura-jedis-extension</artifactId>
     <version>TAG</version>
 </dependency>
 ```
