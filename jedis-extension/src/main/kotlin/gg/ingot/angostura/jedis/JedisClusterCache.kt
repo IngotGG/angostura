@@ -27,16 +27,17 @@ internal class JedisClusterJsonCache<T : Any>(
     jedisCluster: JedisCluster,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val jsonKClass: KClass<*>,
+    private val arrayType: KClass<*>? = null,
     private val serializationAdapter: AngosturaSerializationAdapter
 ): JedisClusterCache<T>(redisKey, key, ttl, refreshTTL, jedisCluster, dispatcher, String::class) {
     override suspend fun put(key: String, value: T): T {
-        super.putString(key, serializationAdapter.serialize(value, jsonKClass))
+        super.putString(key, serializationAdapter.serialize(value, jsonKClass, arrayType))
         return value
     }
 
     override suspend fun get(key: String): T? {
         val value = super.get(key)
             ?: return null
-        return serializationAdapter.deserialize(value, jsonKClass) as? T
+        return serializationAdapter.deserialize(value, jsonKClass, arrayType) as? T
     }
 }
