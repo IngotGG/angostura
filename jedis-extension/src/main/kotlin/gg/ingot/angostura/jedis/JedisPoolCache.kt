@@ -27,10 +27,11 @@ internal class JedisPoolJsonCache<T : Any>(
     jedisPool: JedisPool,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val jsonKClass: KClass<*>,
+    private val arrayType: KClass<*>? = null,
     private val serializationAdapter: AngosturaSerializationAdapter
 ): JedisPoolCache<T>(redisKey, key, ttl, refreshTTL, jedisPool, dispatcher, String::class) {
     override suspend fun put(key: String, value: T): T {
-        super.putString(key, serializationAdapter.serialize(value, jsonKClass))
+        super.putString(key, serializationAdapter.serialize(value, jsonKClass, arrayType))
         return value
     }
 
@@ -38,6 +39,6 @@ internal class JedisPoolJsonCache<T : Any>(
         val value = super.get(key)
             ?: return null
 
-        return serializationAdapter.deserialize(value, jsonKClass) as? T
+        return serializationAdapter.deserialize(value, jsonKClass, arrayType) as? T
     }
 }

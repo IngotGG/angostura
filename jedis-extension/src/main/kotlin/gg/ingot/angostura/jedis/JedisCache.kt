@@ -131,7 +131,8 @@ fun <T : Any> createJedisCache(
     ttl: Duration,
     refreshTTL: Boolean,
     dispatcher: CoroutineDispatcher,
-    kClass: KClass<*>
+    kClass: KClass<*>,
+    arrayType: KClass<*>? = null
 ): Cache<T> {
     require(jedisSettings.redisKey.isNotBlank()) { "no redis key set in angostura settings." }
 
@@ -147,9 +148,9 @@ fun <T : Any> createJedisCache(
         checkNotNull(settings.serializationAdapter) { "no serialization adapter set in angostura settings." }
 
         if(jedisSettings.pooled) {
-            JedisPoolJsonCache(jedisSettings.redisKey, key, ttl, refreshTTL, jedisSettings.pool!!, dispatcher, kClass, settings.serializationAdapter!!)
+            JedisPoolJsonCache(jedisSettings.redisKey, key, ttl, refreshTTL, jedisSettings.pool!!, dispatcher, kClass, arrayType, settings.serializationAdapter!!)
         } else {
-            JedisClusterJsonCache(jedisSettings.redisKey, key, ttl, refreshTTL, jedisSettings.cluster!!, dispatcher, kClass, settings.serializationAdapter!!)
+            JedisClusterJsonCache(jedisSettings.redisKey, key, ttl, refreshTTL, jedisSettings.cluster!!, dispatcher, kClass, arrayType, settings.serializationAdapter!!)
         }
     }
 }
@@ -172,6 +173,10 @@ inline fun <reified T : Any> Angostura.jedisCache(
     checkNotNull(key)
     checkNotNull(ttl)
 
+    if(Collection::class.java.isAssignableFrom(T::class.java)) {
+        error("use jedisArrayCache for collections.")
+    }
+
     return createJedisCache(
         settings,
         settings.extraSettings[AngosturaJedisSettings::class] as? AngosturaJedisSettings
@@ -180,6 +185,28 @@ inline fun <reified T : Any> Angostura.jedisCache(
         ttl,
         refreshTTL,
         dispatcher,
+        T::class
+    )
+}
+
+inline fun <reified T : Any> Angostura.jedisArrayCache(
+    key: String? = T::class.java.simpleName,
+    ttl: Duration? = settings.defaultTTL ?: error("no ttl specified and no default was set"),
+    refreshTTL: Boolean = settings.defaultRefreshTTL,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
+): Cache<List<T>> {
+    checkNotNull(key)
+    checkNotNull(ttl)
+
+    return createJedisCache(
+        settings,
+        settings.extraSettings[AngosturaJedisSettings::class] as? AngosturaJedisSettings
+            ?: error("no angostura jedis settings found."),
+        key,
+        ttl,
+        refreshTTL,
+        dispatcher,
+        List::class,
         T::class
     )
 }
