@@ -22,9 +22,10 @@ internal abstract class JedisCache<T : Any>(
     key: String,
     ttl: Duration,
     refreshTTL: Boolean = false,
+    version: String?,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val kClass: KClass<*>
-) : KeyedCacheLayer<T>(key, ttl, refreshTTL) {
+) : KeyedCacheLayer<T>("${redisKey}:${key}", ttl, refreshTTL, version) {
     private val coroutineScope = CoroutineScope(dispatcher + SupervisorJob())
 
     /**
@@ -77,15 +78,6 @@ internal abstract class JedisCache<T : Any>(
     protected abstract fun jedis(): JedisWrapper
 
     /**
-     * Build the key for the cache.
-     * @param str The string to append to the key.
-     * @return The built key.
-     */
-    private fun buildKey(str: String): String {
-        return "${redisKey}:${key}:${str}"
-    }
-
-    /**
      * Jedis Wrapper to allow for either [JedisPool] or [JedisCluster].
      */
     protected interface JedisWrapper {
@@ -122,6 +114,7 @@ internal abstract class JedisCache<T : Any>(
  * @param refreshTTL If the time to live should be refreshed on access.
  * @param dispatcher The coroutine dispatcher.
  * @param kClass The class of the cache.
+ * @param arrayType The class of the array type.
  * @return The cache.
  */
 fun <T : Any> createJedisCache(
@@ -130,6 +123,7 @@ fun <T : Any> createJedisCache(
     key: String,
     ttl: Duration,
     refreshTTL: Boolean,
+    version: String?,
     dispatcher: CoroutineDispatcher,
     kClass: KClass<*>,
     arrayType: KClass<*>? = null
@@ -139,18 +133,18 @@ fun <T : Any> createJedisCache(
     return if(kClass in CacheLayer.supportedPrimitiveTypes) {
         // primitive cache
         if(jedisSettings.pooled) {
-            JedisPoolCache(jedisSettings.redisKey, key, ttl, refreshTTL, jedisSettings.pool!!, dispatcher, kClass)
+            JedisPoolCache(jedisSettings.redisKey, key, ttl, refreshTTL, version, jedisSettings.pool!!, dispatcher, kClass)
         } else {
-            JedisClusterCache(jedisSettings.redisKey, key, ttl, refreshTTL, jedisSettings.cluster!!, dispatcher, kClass)
+            JedisClusterCache(jedisSettings.redisKey, key, ttl, refreshTTL, version, jedisSettings.cluster!!, dispatcher, kClass)
         }
     } else {
         // json cache
         checkNotNull(settings.serializationAdapter) { "no serialization adapter set in angostura settings." }
 
         if(jedisSettings.pooled) {
-            JedisPoolJsonCache(jedisSettings.redisKey, key, ttl, refreshTTL, jedisSettings.pool!!, dispatcher, kClass, arrayType, settings.serializationAdapter!!)
+            JedisPoolJsonCache(jedisSettings.redisKey, key, ttl, refreshTTL, version, jedisSettings.pool!!, dispatcher, kClass, arrayType, settings.serializationAdapter!!)
         } else {
-            JedisClusterJsonCache(jedisSettings.redisKey, key, ttl, refreshTTL, jedisSettings.cluster!!, dispatcher, kClass, arrayType, settings.serializationAdapter!!)
+            JedisClusterJsonCache(jedisSettings.redisKey, key, ttl, refreshTTL, version, jedisSettings.cluster!!, dispatcher, kClass, arrayType, settings.serializationAdapter!!)
         }
     }
 }
@@ -184,11 +178,21 @@ inline fun <reified T : Any> Angostura.jedisCache(
         key,
         ttl,
         refreshTTL,
+        settings.version,
         dispatcher,
         T::class
     )
 }
 
+/**
+ * Create a new jedis cache for collections.
+ * @param key The key for the cache.
+ * @param ttl The time to live of the cache.
+ * @param refreshTTL If the time to live should be refreshed on access.
+ * @param dispatcher The coroutine dispatcher.
+ * @return The cache.
+ * @throws IllegalStateException If [AngosturaJedisSettings] are not set.
+ */
 inline fun <reified T : Any> Angostura.jedisArrayCache(
     key: String? = T::class.java.simpleName,
     ttl: Duration? = settings.defaultTTL ?: error("no ttl specified and no default was set"),
@@ -205,6 +209,7 @@ inline fun <reified T : Any> Angostura.jedisArrayCache(
         key,
         ttl,
         refreshTTL,
+        settings.version,
         dispatcher,
         List::class,
         T::class

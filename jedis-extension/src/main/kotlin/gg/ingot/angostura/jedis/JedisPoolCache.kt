@@ -12,10 +12,11 @@ internal open class JedisPoolCache<T : Any>(
     key: String,
     ttl: Duration,
     refreshTTL: Boolean = false,
+    version: String?,
     private val jedisPool: JedisPool,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     kClass: KClass<*>
-): JedisCache<T>(redisKey, key, ttl, refreshTTL, dispatcher, kClass) {
+): JedisCache<T>(redisKey, key, ttl, refreshTTL, version, dispatcher, kClass) {
     override fun jedis(): JedisWrapper = JedisPoolWrapper(jedisPool)
 }
 
@@ -24,12 +25,13 @@ internal class JedisPoolJsonCache<T : Any>(
     key: String,
     ttl: Duration,
     refreshTTL: Boolean = false,
+    version: String?,
     jedisPool: JedisPool,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val jsonKClass: KClass<*>,
     private val arrayType: KClass<*>? = null,
     private val serializationAdapter: AngosturaSerializationAdapter
-): JedisPoolCache<T>(redisKey, key, ttl, refreshTTL, jedisPool, dispatcher, String::class) {
+): JedisPoolCache<T>(redisKey, key, ttl, refreshTTL, version, jedisPool, dispatcher, String::class) {
     override suspend fun put(key: String, value: T): T {
         super.putString(key, serializationAdapter.serialize(value, jsonKClass, arrayType))
         return value
