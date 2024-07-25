@@ -16,7 +16,7 @@ data class AngosturaSettings(
     val defaultTTL: Duration? = null,
     val defaultRefreshTTL: Boolean = false,
     val serializationAdapter: AngosturaSerializationAdapter? = null,
-    var version: Int? = null
+    var version: String? = null
 ) {
     private val _extraSettings = mutableMapOf<KClass<*>, AngosturaExtraSettings>()
     val extraSettings: Map<KClass<*>, AngosturaExtraSettings>

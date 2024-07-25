@@ -12,7 +12,7 @@ internal open class JedisPoolCache<T : Any>(
     key: String,
     ttl: Duration,
     refreshTTL: Boolean = false,
-    version: Int?,
+    version: String?,
     private val jedisPool: JedisPool,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     kClass: KClass<*>
@@ -25,7 +25,7 @@ internal class JedisPoolJsonCache<T : Any>(
     key: String,
     ttl: Duration,
     refreshTTL: Boolean = false,
-    version: Int?,
+    version: String?,
     jedisPool: JedisPool,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val jsonKClass: KClass<*>,

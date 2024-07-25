@@ -12,7 +12,7 @@ internal open class JedisClusterCache<T : Any>(
     key: String,
     ttl: Duration,
     refreshTTL: Boolean = false,
-    version: Int?,
+    version: String?,
     private val jedisCluster: JedisCluster,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     kClass: KClass<*>
@@ -25,7 +25,7 @@ internal class JedisClusterJsonCache<T : Any>(
     key: String,
     ttl: Duration,
     refreshTTL: Boolean = false,
-    version: Int?,
+    version: String?,
     jedisCluster: JedisCluster,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val jsonKClass: KClass<*>,

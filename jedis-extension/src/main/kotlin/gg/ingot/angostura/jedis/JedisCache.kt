@@ -22,7 +22,7 @@ internal abstract class JedisCache<T : Any>(
     key: String,
     ttl: Duration,
     refreshTTL: Boolean = false,
-    version: Int?,
+    version: String?,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val kClass: KClass<*>
 ) : KeyedCacheLayer<T>("${redisKey}:${key}", ttl, refreshTTL, version) {
@@ -123,7 +123,7 @@ fun <T : Any> createJedisCache(
     key: String,
     ttl: Duration,
     refreshTTL: Boolean,
-    version: Int?,
+    version: String?,
     dispatcher: CoroutineDispatcher,
     kClass: KClass<*>,
     arrayType: KClass<*>? = null

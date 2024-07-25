@@ -18,7 +18,7 @@ abstract class KeyedCacheLayer<T : Any>(
     private val key: String,
     ttl: Duration,
     refreshTTL: Boolean = false,
-    private val version: Int?
+    private val version: String?
 ) : CacheLayer<T>(ttl, refreshTTL) {
     /**
      * Build the key for the cache.
