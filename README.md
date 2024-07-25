@@ -50,6 +50,7 @@ dependencies {
 * [Jedis Support](#jedis)
 * [Serialization Support](#serialization)
 * [Burst Request Cache](#burst-cache)
+* [Cache Versioning](#cache-versioning)
 * Kotlin Coroutines Support
 
 ## Basic Usage
@@ -146,6 +147,42 @@ suspend fun main() {
     )
     val value = cache.getOrCache(1.toString()) {
         HotResource(1, "Ingot Team")
+    }
+
+    println(value)
+}
+```
+
+### Cache Versioning
+In cases where you may have multiple different versions of an app hitting the cache
+sometimes the models between those caches may differ which could lead to deserialization errors.
+
+Applying a version key to the cache will allow you to safely rollback the application in these cases.
+```kotlin
+@Serializable
+data class Resource(val id: Int)
+
+suspend fun main() {
+    val jedis = JedisPool("localhost", 6379)
+
+    val angostura = Angostura(
+        AngosturaSettings(
+            // we can pass a version key for the cache
+            version = System.getenv("GITHUB_COMMIT_HASH"),
+            // simply pass a serialization adapter
+            serializationAdapter = AngosturaSerializationAdapter.Kotlinx(Json)
+        ).withExtra(AngosturaJedisSettings( // we pass the extra config
+            pool = jedis
+        ))
+    )
+
+    // the version will automatically be placed into the key and in redis it
+    // will look something like this, 'angostura:cache:Resource:8c4db91:{KEY}'
+    // so you can safely rollback the application or keep multiple versions of the
+    // application running at once.
+    val cache = angostura.jedisCache<Resource>(ttl = 5.seconds, refreshTTL = true)
+    val value = cache.getOrCache("key") {
+        Resource(id = 1)
     }
 
     println(value)
