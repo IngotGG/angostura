@@ -41,6 +41,12 @@ internal class JedisPoolJsonCache<T : Any>(
         val value = super.get(key)
             ?: return null
 
-        return serializationAdapter.deserialize(value, jsonKClass, arrayType) as? T
+        return try {
+            serializationAdapter.deserialize(value, jsonKClass, arrayType) as? T
+        } catch(ex: Exception) {
+            logger?.trace("Failed to deserialize {} from the cache, invalidating.", key)
+            super.invalidate(key)
+            null
+        }
     }
 }

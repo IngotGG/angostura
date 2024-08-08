@@ -4,7 +4,7 @@ plugins {
 }
 
 allprojects {
-    version = "1.0.5"
+    version = "1.0.6"
     group = "gg.ingot"
 }
 

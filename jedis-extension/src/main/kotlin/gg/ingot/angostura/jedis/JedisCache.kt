@@ -6,6 +6,8 @@ import gg.ingot.angostura.cache.Cache
 import gg.ingot.angostura.cache.CacheLayer
 import gg.ingot.angostura.cache.KeyedCacheLayer
 import kotlinx.coroutines.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import redis.clients.jedis.JedisCluster
 import redis.clients.jedis.JedisPool
 import kotlin.reflect.KClass
@@ -26,6 +28,12 @@ internal abstract class JedisCache<T : Any>(
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val kClass: KClass<*>
 ) : KeyedCacheLayer<T>("${redisKey}:${key}", ttl, refreshTTL, version) {
+    protected val logger: Logger? = try {
+        LoggerFactory.getLogger(JedisCache::class.java)
+    } catch(ex: Exception) {
+        null
+    }
+
     private val coroutineScope = CoroutineScope(dispatcher + SupervisorJob())
 
     /**
